@@ -1,4 +1,5 @@
-import { v2 as cloudinary } from "cloudinary";
+import pkg from 'cloudinary';
+const { v2: cloudinary } = pkg;
 import multer from "multer";
 import dotenv from "dotenv";
 dotenv.config();
@@ -11,34 +12,6 @@ cloudinary.config({
 });
 
 // Upload an image
-// export const uploadResult = async (req, res, next) => {
-//   try {
-//     if (!req.file) {
-//       return res.status(400).json({ message: "No file uploaded" });
-//     }
-
-//     const uploadFiles = [];
-//     // Upload the file to Cloudinary
-//     for (const file of req.files) {
-//       const result = await cloudinary.uploader.upload(req.file.path, {
-//         folder: "Ecommerce-website" // Specify the folder in Cloudinary where you want to save the file
-//       });
-//       uploadFiles.push(result)
-//     }
-//     console.log(uploadFiles)
-
-//     // Attach the Cloudinary URL to the request object so that it can be used in the next middleware/controller
-//     req.file.path = result.secure_url;
-
-//     // Optionally, delete the local file after uploading to Cloudinary to save space
-//     // fs.unlinkSync(req.file.path);
-
-//     next(); // Pass the control to the next middleware
-//   } catch (error) {
-//     console.error("Cloudinary upload error:", error);
-//     return res.status(500).json({ message: "Image upload failed" });
-//   }
-// };
 
 export const uploadResult = async (req, res, next) => {
   try {
