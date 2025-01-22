@@ -1,0 +1,105 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import baseURL from "../../../utils/baseURL";
+import axios from "axios";
+
+// Initial State
+const initialState = {
+  colors: [],
+  color: {},
+  loading: false,
+  error: null,
+  isAdded: false,
+  isUpdated: false,
+  isDelete: false
+};
+
+// Create Color action
+export const createColorAction = createAsyncThunk(
+  "color/create",
+  async (payload, { rejectWithValue, getState, dispatch }) => {
+    try {
+      const {
+        name
+      } = payload;
+      
+      // Token 
+      const token = getState()?.user?.userInfo?.token;
+
+      // Config
+      const config = {
+        headers : {
+          Authorization : `Bearer ${token}`,
+        }
+      }
+
+      // make req
+      const { data } = await axios.post(`${baseURL}/colors`, {
+        name
+      },
+      config
+      );
+      return data;
+    } catch (error) {
+      return rejectWithValue(error?.response?.data)
+    }
+  }
+);
+
+// Get Colors action
+export const getColorsAction = createAsyncThunk(
+  "colors",
+  async(payload, {rejectWithValue,getState,dispatch}) => {
+    try{
+      const {data} = await axios.get(`${baseURL}/colors`);
+      return data;
+    } catch(error){
+      return rejectWithValue(error?.response?.data)
+    }
+  }
+)
+
+
+
+
+
+// color slices
+const colorSlice = createSlice({
+  name : "colors",
+  initialState,
+  extraReducers : (builder) => {
+    // create color
+    builder.addCase(createColorAction.pending, (state) => {
+      state.loading = true
+    })
+    .addCase(createColorAction.fulfilled, (state,action) => {
+      state.loading = false;
+      state.color = action.payload
+      state.isAdded = true
+    })
+    .addCase(createColorAction.rejected, (state,action) => {
+      state.loading = false
+      state.color = null
+      state.isAdded = false
+      state.error = action.payload 
+    })
+
+    // Fetch color
+    builder.addCase(getColorsAction.pending, (state) => {
+      state.loading = true
+    })
+    .addCase(getColorsAction.fulfilled, (state,action) => {
+      state.loading = false;
+      state.colors = action.payload
+      state.isAdded = true
+    })
+    .addCase(getColorsAction.rejected, (state,action) => {
+      state.loading = false
+      state.colors = null
+      state.isAdded = false
+      state.error = action.payload 
+    })
+  }
+})
+
+const colorReducer = colorSlice.reducer;
+export default colorReducer
